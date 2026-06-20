@@ -45,6 +45,12 @@ cd ../main && npm install && npm run build && npm run package
 # → dist/ contains the installer + portable .exe
 ```
 
+## Credits
+
+Built on [Exiled Exchange 2](https://github.com/Kvan7/Exiled-Exchange-2) by
+Kvan7 — itself a fork of [Awakened PoE Trade](https://github.com/SnosMe/awakened-poe-trade)
+by SnosMe (Alexander Drozdov). Thanks to both for the foundation.
+
 ## License
 
 MIT — see [LICENSE](./LICENSE).
