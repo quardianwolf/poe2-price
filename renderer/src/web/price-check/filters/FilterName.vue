@@ -1,0 +1,115 @@
+<template>
+  <div class="filter-name">
+    <button
+      class="px-2 rounded border overflow-hidden text-ellipsis font-poe-sc transition-colors"
+      :class="{
+        'border-accent-500 text-accent-200 bg-accent-900/40': showAsActive,
+        'border-gray-700 text-gray-200 hover:border-gray-600': !showAsActive,
+      }"
+      @click="toggleAccuracy"
+    >
+      {{ label }}
+    </button>
+    <button
+      v-if="filters.corrupted"
+      class="px-2 transition-colors"
+      @click="corrupted = !corrupted"
+    >
+      <span v-if="corrupted" class="text-fire font-medium">{{
+        t("item.corrupted")
+      }}</span>
+      <span v-else class="text-gray-600 hover:text-gray-500">{{
+        t("item.not_corrupted")
+      }}</span>
+    </button>
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent, PropType, computed } from "vue";
+import { useI18n } from "vue-i18n";
+import type { ParsedItem } from "@/parser";
+import type { ItemFilters } from "./interfaces";
+import { CATEGORY_TO_TRADE_ID } from "../trade/pathofexile-trade";
+
+export default defineComponent({
+  name: "FilterName",
+  props: {
+    filters: {
+      type: Object as PropType<ItemFilters>,
+      required: true,
+    },
+    item: {
+      type: Object as PropType<ParsedItem>,
+      required: true,
+    },
+  },
+  setup(props) {
+    const { t } = useI18n();
+
+    const label = computed(() => {
+      const { filters } = props;
+      const activeSearch =
+        filters.searchRelaxed && !filters.searchRelaxed.disabled
+          ? filters.searchRelaxed
+          : filters.searchExact;
+
+      if (activeSearch.name) {
+        return activeSearch.name;
+      }
+      if (activeSearch.baseType) {
+        return activeSearch.baseType;
+      }
+      if (activeSearch.category) {
+        const tradeId = CATEGORY_TO_TRADE_ID.get(activeSearch.category)!;
+        return t("item_category.prop", [
+          t(`item_category.${tradeId.replace(".", "_")}`),
+        ]);
+      }
+
+      return "??? Report if you see this text";
+    });
+
+    const showAsActive = computed(() => {
+      const { filters } = props;
+      return filters.searchRelaxed?.disabled;
+    });
+
+    function toggleAccuracy() {
+      const { filters } = props;
+      if (filters.searchRelaxed) {
+        filters.searchRelaxed.disabled = !filters.searchRelaxed.disabled;
+      }
+    }
+
+    const corrupted = computed<boolean>({
+      get() {
+        return props.filters.corrupted!.value;
+      },
+      set(value) {
+        props.filters.corrupted!.value = value;
+      },
+    });
+
+    return {
+      t,
+      label,
+      showAsActive,
+      toggleAccuracy,
+      corrupted,
+    };
+  },
+});
+</script>
+
+<style lang="postcss">
+.filter-name {
+  @apply mb-2 rounded-md p-1;
+  background: linear-gradient(to bottom, #111825, #0b0f18);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  line-height: 1.35rem;
+  display: flex;
+  justify-content: space-between;
+  white-space: nowrap;
+}
+</style>

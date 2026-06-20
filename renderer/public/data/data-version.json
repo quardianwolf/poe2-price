@@ -1,0 +1,5 @@
+{
+  "version": "bundled-0.15.7",
+  "builtAt": "2026-06-19T00:31:41Z",
+  "note": "Baseline shipped with the app. scripts/update-data.mjs bumps this; the running app updates when `version` changes."
+}
